@@ -1,54 +1,50 @@
 
-### **Concept 4: Structs, Enums & Passing by Reference**
+# Concept 4: Structs, Enums & Passing by Reference
 
-#### **1. Deep Explanation (The Logic)**
+## 1. Deep Explanation (The Logic)
+We are now building the **"Vocabulary"** of our robot's code. This section combines three concepts to show you how to structure data efficiently.
 
-We are now building the "Vocabulary" of our robot's code.
 
-**A. Structs (The "Data Bag")**
-A Struct allows you to bundle different types of variables into one package.
 
-  * *Without Struct:* You carry an Apple, a Pen, and a Book separately in your hands.
-  * *With Struct:* You put them all in a Backpack. You just pass the Backpack around.
-  * *Memory:* It reserves a block of memory large enough to hold all the variables inside it.
+### A. Structs (The "Data Bag")
+A **Struct** allows you to bundle different types of variables into one package.
+* **Without Struct:** You carry an Apple, a Pen, and a Book separately in your hands.
+* **With Struct:** You put them all in a **Backpack**. You just pass the Backpack around.
+* **Memory:** It reserves a block of memory large enough to hold all the variables inside it.
 
-**B. Enums (The "Labels")**
-Computers like numbers (`0`, `1`, `2`). Humans like words (`STOP`, `GO`, `WAIT`).
-An **Enum (Enumeration)** maps readable names to integers.
+### B. Enums (The "Labels")
+Computers like numbers (0, 1, 2). Humans like words (STOP, GO, WAIT).
+An **Enum** (Enumeration) maps readable names to integers.
+* Instead of writing `if (robot_mode == 2)`, you write `if (robot_mode == EMERGENCY)`.
+* This removes **"Magic Numbers"** from your code, making it readable and less buggy.
 
-  * Instead of writing `if (robot_mode == 2)`, you write `if (robot_mode == EMERGENCY)`.
-  * This removes "Magic Numbers" from your code, making it readable and less buggy.
-
-**C. The Combination (Structs + References)**
+### C. The Combination (Structs + References)
 Structs often become large (holding Lidar data, GPS, etc.).
+* If you pass a Struct to a function normally, C++ **Copies** the whole bag (Slow 🐢).
+* We almost always pass Structs by **Reference (`&`)**. This gives the function access to the **original bag** instantly without copying (Fast ⚡).
 
-  * If you pass a Struct to a function normally, C++ **Copies** the whole bag (Slow).
-  * We almost always pass Structs by **Reference (`&`)**. This gives the function access to the original bag instantly without copying.
+---
 
------
+## 2. Why do we use it?
+* **State Machines (Enums):** Robots always have states (Idle, Docking, Charging). Enums are the standard way to manage this.
+* **Clean Interfaces (Structs):** Instead of a function taking 10 parameters (`func(x, y, z, r, p, y, vel...)`), we create a Struct `State` and pass just one parameter (`func(State &s)`).
+* **Efficiency (References):** Sending a CameraImage struct by Reference saves megabytes of RAM copying per frame.
 
-#### **2. Why do we use it?**
+---
 
-1.  **State Machines (Enums):** Robots always have states (Idle, Docking, Charging). Enums are the standard way to manage this.
-2.  **Clean Interfaces (Structs):** Instead of a function taking 10 parameters (`func(x, y, z, r, p, y, vel...)`), we create a Struct `State` and pass just one parameter (`func(State &s)`).
-3.  **Efficiency (References):** Sending a `CameraImage` struct by Reference saves megabytes of RAM copying per frame.
+## 3. Syntax & Rules
 
------
-
-#### **3. Syntax & Rules**
-
-**A. Defining an Enum (Scoped)**
+### A. Defining an Enum (Scoped)
 Use `enum class` (Modern C++) to prevent name conflicts.
-
 ```cpp
 enum class State {
     IDLE,   // Effectively 0
     RUNNING,// Effectively 1
     ERROR   // Effectively 2
 };
-```
+````
 
-**B. Defining a Struct**
+### B. Defining a Struct
 
 ```cpp
 struct RobotData {
@@ -58,7 +54,7 @@ struct RobotData {
 };
 ```
 
-**C. Passing by Reference**
+### C. Passing by Reference
 
 ```cpp
 // We use '&' to avoid copying the heavy struct
@@ -69,9 +65,9 @@ void updateRobot(RobotData &data) {
 
 -----
 
-#### **4. The Trap: "Magic Numbers"**
+## 4\. The Trap: "Magic Numbers" ⚠️
 
-A "Magic Number" is a raw number in code with no explanation.
+A **"Magic Number"** is a raw number in code with no explanation.
 
   * **Bad Code:** `if (state == 3) { ... }`
       * *Problem:* What is 3? Is it "Error"? Is it "Shutdown"? If you come back in 6 months, you won't know.
@@ -79,7 +75,7 @@ A "Magic Number" is a raw number in code with no explanation.
 
 -----
 
-#### **5. Code Example**
+## 5\. Code Example
 
 ```cpp
 #include <iostream>
@@ -101,7 +97,7 @@ struct WifiModule {
 };
 
 // 3. Function taking the Struct by REFERENCE
-// We modify the original struct directly.
+// We modify the original struct directly using '&'
 void attemptConnection(WifiModule &mod) {
     std::cout << "Connecting to " << mod.ip_address << "...\n";
     
@@ -114,6 +110,7 @@ void attemptConnection(WifiModule &mod) {
 }
 
 // Helper to print Enum (Since C++ doesn't print names automatically)
+// Note: We use 'const &' because we just want to READ, not modify.
 void printStatus(const WifiModule &mod) {
     switch (mod.status) {
         case ConnectionState::CONNECTED: std::cout << "Status: ONLINE\n"; break;
@@ -139,37 +136,42 @@ int main() {
 
 -----
 
-#### **6. ROS2 Context: "Goal Responses"**
+## 6\. ROS2 Context: "Goal Responses"
 
 ROS2 uses this pattern everywhere.
 
-  * **Enums for Results:** When you ask a navigation robot to move, it returns an Enum code:
+1.  **Enums for Results:** When you ask a navigation robot to move, it returns an Enum code:
       * `GoalStatus::SUCCEEDED`
       * `GoalStatus::ABORTED`
       * `GoalStatus::CANCELED`
-  * **Structs for Config:** You often define a Struct to hold your robot's configuration (PID constants, Max Speed, Wheel Radius) and pass this struct to your setup functions by Reference.
+2.  **Structs for Config:** You often define a Struct to hold your robot's configuration (PID constants, Max Speed, Wheel Radius) and pass this struct to your setup functions by Reference.
 
 -----
 
-#### **7. Task: The "Traffic Light" Logic**
+## 7\. Task: The "Traffic Light" Logic ✅
 
 **Scenario:**
 You are simulating a traffic light controller. You need to switch the lights in order.
 
 **Requirements:**
 
-1.  **Define an Enum** named `LightColor` with values: `RED`, `YELLOW`, `GREEN`.
-2.  **Define a Struct** named `TrafficLight` containing:
+1.  Define an Enum named `LightColor` with values: `RED`, `YELLOW`, `GREEN`.
+2.  Define a Struct named `TrafficLight` containing:
       * `LightColor color;`
       * `int timer_seconds;`
-3.  **Define a Function** `void updateLight(TrafficLight &light)`.
-      * **Logic:**
-          * If color is `RED` $\rightarrow$ Change to `GREEN`, set timer to 30.
-          * If color is `GREEN` $\rightarrow$ Change to `YELLOW`, set timer to 5.
-          * If color is `YELLOW` $\rightarrow$ Change to `RED`, set timer to 60.
-4.  **In Main:**
-      * Create a `TrafficLight` variable starting at `RED`.
-      * Call `updateLight` twice.
-      * Print the final state (Should be `YELLOW` if you called it twice).
+3.  Define a Function `void updateLight(TrafficLight &light)`.
 
-**Goal:** This proves you can manipulate the "State" of an object using Enums and References.
+**The Logic Puzzle:**
+Inside the function, check the current color and switch to the next one:
+
+  * If `RED` $\rightarrow$ Change to `GREEN`, set timer to 30.
+  * If `GREEN` $\rightarrow$ Change to `YELLOW`, set timer to 5.
+  * If `YELLOW` $\rightarrow$ Change to `RED`, set timer to 60.
+
+**In Main:**
+
+1.  Create a `TrafficLight` variable starting at `RED`.
+2.  Call `updateLight` twice.
+3.  Print the final state (Should be `YELLOW` if you called it twice).
+
+*Goal: This proves you can manipulate the "State" of an object using Enums and References.*
