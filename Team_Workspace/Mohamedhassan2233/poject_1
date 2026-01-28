@@ -1,0 +1,13 @@
+#include <iostream>
+using namespace std;
+
+int main() 
+{
+    int time_microseconds = 5882;
+
+    double distance_meters = static_cast<double>(time_microseconds) / 58 / 100;
+
+    cout << "Distance = " << distance_meters << " meters\n";
+
+    return 0;
+}
