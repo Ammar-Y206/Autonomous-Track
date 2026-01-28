@@ -1,0 +1,41 @@
+from enum import Enum 
+from dataclasses import dataclass
+
+class LightColor(Enum):
+    red = 0
+    green = 1 
+    yellow = 2
+    
+    
+@dataclass
+class TrafficLight:
+    color: LightColor
+    timer_seconds: int
+    
+    
+def update_light(light):
+    if light.color == LightColor.red:
+        light.color = LightColor.green
+        light.timer_seconds = 30
+        print("Green")
+    
+    elif light.color == LightColor.green:
+        light.color = LightColor.yellow
+        light.timer_seconds = 5
+        print("Yellow")
+        
+    elif light.color == LightColor.yellow:
+        light.color = LightColor.red
+        light.timer_seconds = 60
+        print("Red")
+        
+        
+        
+now = TrafficLight(LightColor.red,60)   
+
+update_light(now)
+update_light(now)
+    
+    
+    
+    
