@@ -1,0 +1,18 @@
+gear = 'D'
+speed = 0.0 
+
+match gear:
+    case 'P':
+        speed = 0.0 
+        print('Parking')
+    case 'D':
+        speed = 10.0 
+        print('Driving Forward')
+    case 'R':
+        speed = -5.0 
+        print('Reversing')
+    case _:
+        speed = 0.0 
+        print('Error:Unknown Gear')
+        
+print(f"Final speed: {speed}")
