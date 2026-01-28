@@ -1,0 +1,10 @@
+temps = [35.5, 30.0, 32.2, 40.0, 38.1]
+
+sum = 0.0 
+
+for t in temps:
+    sum+=t
+    
+avg = sum/5 
+print('Average Temperature : ',avg)
+print('The sum : ',sum)

@@ -1,0 +1,12 @@
+volts = [12.5 , 11.8 , 13.1 , 12.0]
+
+def find_extremes(data_list):
+    min_value = min(data_list)
+    max_value = max(data_list)
+    return min_value,max_value
+    
+    
+min_value , max_value = find_extremes(volts)
+
+print('Min voltage : ', min_value)
+print('Max voltage : ', max_value)
