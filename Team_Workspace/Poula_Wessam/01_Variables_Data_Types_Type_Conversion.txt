@@ -1,0 +1,11 @@
+time_microseconds = 5882     #given data 
+
+distance_CM =float(time_microseconds)/58   #convertion 1
+distance_meters = distance_CM/100         #convertion 2 
+
+print('distance_meters = ', distance_meters , 'meters')
+
+
+
+
+
